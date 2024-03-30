@@ -9,27 +9,27 @@ tron = Tron(full_node)
 
 print("[You are about to transfer USDT on TRON network]")
 
-# strPrivKey = input("Private key:")
-# strPrivKey = str.strip(strPrivKey)
+strPrivKey = input("Private key:")
+strPrivKey = str.strip(strPrivKey)
 
-# strAddress = input("Recipient Address:")
-# strAddress = str.strip(strAddress)
+strAddress = input("Recipient Address:")
+strAddress = str.strip(strAddress)
 
-# strAmount = input("Amount to send:")
-# strAmount = str.strip(strAmount)
-strPrivKey = "3d6cad5fe058775fed79fe2d8cf5d302751b7aacb5fd0bd960daadec842d1a58"
-strAddress = "TGk7fukQ1qR291wM8SnsHdA7PTWqbsUmB8"
-strAmount = 100
+strAmount = input("Amount to send:")
+strAmount = str.strip(strAmount)
+#strPrivKey = "3d6cad5fe058775fed79fe2d8cf5d302751b7aacb5fd0bd960daadec842d1a58"
+#strAddress = "TGk7fukQ1qR291wM8SnsHdA7PTWqbsUmB8"
+#strAmount = 100
 
-# print("--------------------------------")
-# print("[Details]")
-# print("> Private key: " + strPrivKey)
-# print("> Recipient Address: " + strAddress)
-# print("> Amount to send: " + strAmount)
-# print("--------------------------------")
-# strFinal = input("type coconut to confirm transaction: ")
+print("--------------------------------")
+print("[Details]")
+print("> Private key: " + strPrivKey)
+print("> Recipient Address: " + strAddress)
+print("> Amount to send: " + strAmount)
+print("--------------------------------")
+strFinal = input("type coconut to confirm transaction: ")
 
-if True: #strFinal == "coconut":
+if strFinal == "coconut":
     try:
         
         private_key = PrivateKey(bytes.fromhex(strPrivKey))
