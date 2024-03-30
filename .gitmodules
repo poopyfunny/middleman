@@ -1,0 +1,3 @@
+[submodule "tronpy"]
+	path = tronpy
+	url = https://github.com/andelf/tronpy.git
