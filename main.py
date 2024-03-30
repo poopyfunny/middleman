@@ -5,7 +5,7 @@ from tronpy.providers import HTTPProvider
 full_node = HTTPProvider("https://api.trongrid.io")
 solidity_node = HTTPProvider("https://api.trongrid.io")
 event_server = HTTPProvider("https://api.trongrid.io")
-tron = Tron(full_node,solidity_node,event_server)
+tron = Tron(full_node)
 
 print("[You are about to transfer USDT on TRON network]")
 
