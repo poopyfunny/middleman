@@ -1,6 +1,7 @@
 import tron_interface
 import util
 from tron_interface import TronInterface
+import traceback
 
 VERSION = "0.1"
 
@@ -43,7 +44,8 @@ while(not terminated):
         try:
             troncmd()
         except Exception as e:
-            util.print_color(e.args[0], "RED")
+            for a in e.args:
+                util.print_color(a, "RED")
             util.print_color("[middleman] an error occured, try again.", "RED")
     elif maincmd != None: 
         maincmd()

@@ -3,20 +3,24 @@ from tronpy import Tron
 from tronpy.tron import Transaction
 from tronpy.keys import PrivateKey
 from tronpy.providers import HTTPProvider
+import requests
 import util
 import json
 
+
 class TronInterface:
     def __init__(self):
-        self.tron = Tron(HTTPProvider("https://api.shasta.trongrid.io",60,["a04ea065-ce21-45aa-a941-8383692cf5dd"]))
-
+        self.tron = Tron(HTTPProvider("https://api.trongrid.io",60,["273ea69b-c387-46cd-bc39-879c22a347a9"]))
+        self.TRONSCAN_API_URL = "https://apilist.tronscan.org/api/account"
         self.commands = {
         "1": self.send_trx,
         "2": self.send_usdt,
+        "4": self.unfreeze_balance,
         }
         self.commands_context = {
             "1": "1 - send trx",
             "2": "2 - send usd",
+            "4": "4 - unfreeze balance"
         }
 
     def collect_userinput_details(self, args):
@@ -104,3 +108,24 @@ class TronInterface:
         print("> USDT: " + str_amount)
         util.print_shelf()
         util.print_color("type coconut to confirm transaction:")
+
+    def unfreeze_balance(self):
+        details = self.collect_userinput_details(["KEY","RESOURCE","AMOUNT"])
+
+        if not details:
+            return None 
+
+        str_pvk = details["KEY"]
+        private_key = PrivateKey(bytes.fromhex(str_pvk))
+        address = private_key.public_key.to_base58check_address()
+        resource = str.upper(details["RESOURCE"])
+
+        # payload = {"address": address}
+        # response = requests.get(self.TRONSCAN_API_URL, params=payload)
+        # data = response.json()
+        # frozen = data["frozen_balance"]
+        tx = (self.tron.trx.unfreeze_balance(owner=address,resource=resource,unfreeze_balance=int(details["AMOUNT"])).build().sign(private_key))
+        response = tx.broadcast().wait()
+        print(response)
+
+
