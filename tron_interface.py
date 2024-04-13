@@ -6,7 +6,7 @@ from tronpy.providers import HTTPProvider
 import requests
 import util
 import json
-
+import time
 
 class TronInterface:
     def __init__(self):
@@ -15,11 +15,13 @@ class TronInterface:
         self.commands = {
         "1": self.send_trx,
         "2": self.send_usdt,
-        "4": self.unfreeze_balance,
+        "3": self.freeze_balance,
+        "4": self.unfreeze_balance
         }
         self.commands_context = {
             "1": "1 - send trx",
             "2": "2 - send usd",
+            "3": "3 - freeze balance",
             "4": "4 - unfreeze balance"
         }
 
@@ -67,47 +69,80 @@ class TronInterface:
         bt = len(hx) / 2
         a = 1
         return 0
+    
+    def str_to_sun(value: str):
+        return int(float(value) * 1_000_000)
 
     def send_trx(self):
-        #details = self.collect_userinput_details(["KEY","ADDRESS", "AMOUNT_TRX"])
-
-        details = {
-            "KEY": "5a9007e0d8f54dc973fa985b141b40d4f69652140c4f1d6db2b78addf39df936",
-            "ADDRESS": "TS6hTJ8CHGd9hoYF2FgoPRsVLJNVfKqfAR",
-            "AMOUNT_TRX": "0.25"
-        }
+        details = util.collect_details_menu("Transaction", ["KEY", "ADDRESS", "AMOUNT_TRX", "MEMO"])
 
         if details == None:
             return None
-        
-        ##custom_fee = util.input_color("custom fee (empty = use energy instead): ")
 
-        util.print_color("type coconut to confirm transaction:", "GREEN")
+        coconut = util.input_color("Type coconut to broadcast transaction:", "GREEN")
+
+        if coconut != "coconut":
+            util.print_color("[middleman] did not pass the coconut challenge.","YELLOW")
+            return
 
         str_pvk = details["KEY"]
         private_key = PrivateKey(bytes.fromhex(str_pvk))
         str_sender_address = private_key.public_key.to_base58check_address()
         str_recipient_address = details["ADDRESS"]
-        str_amount = details["AMOUNT_TRX"]
-        str_coin = "TRX"
+        amount = self.str_to_sun(details["AMOUNT_TRX"])
 
-        tx = (self.tron.trx.transfer(str_sender_address, str_recipient_address,5_000_000).build().sign(private_key))
-        response = tx.broadcast().wait()
-
-        util.print_color(str(response),"YELLOW")
+        tx = (self.tron.trx.transfer(str_sender_address, str_recipient_address,amount).memo(details["MEMO"]).build().sign(private_key))
+        tx.broadcast().wait()
+        util.print_color("[middleman] operation complete!","GREEN")
 
     def send_usdt(self):
-        str_pvk = str.strip(input("private key: "))
-        str_add = str.strip(input("address: "))
-        str_amount = str.strip(input("amount: "))
+        details = util.collect_details_menu("Transaction", ["KEY", "ADDRESS", "AMOUNT_USDT", "FEE_LIMIT" "MEMO"])
 
-        util.print_shelf()
-        print("Details:")
-        print("> KEY: " + str_pvk)
-        print("> RECIPIENT: " + str_add)
-        print("> USDT: " + str_amount)
-        util.print_shelf()
-        util.print_color("type coconut to confirm transaction:")
+        if details == None:
+            return None
+
+        if details["FEE_LIMIT"] == "":
+            details["FEE_LIMIT"] = 20
+
+        coconut = util.input_color("Type coconut to broadcast transaction:", "GREEN")
+        if coconut != "coconut":
+                util.print_color("[middleman] did not pass the coconut challenge.","YELLOW")
+                return
+
+        token_address = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"  # USDT contract address on Tron mainnet
+        token_contract = self.tron.get_contract(token_address)
+
+        str_pvk = details["KEY"]
+        private_key = PrivateKey(bytes.fromhex(str_pvk))
+        str_sender_address = private_key.public_key.to_base58check_address()
+        str_recipient_address = details["ADDRESS"]
+        amount = self.str_to_sun(details["AMOUNT_USDT"])
+        fee = self.str_to_sun(details["FEE_LIMIT"])
+
+        tx = (token_contract.functions.transfer(str_recipient_address,amount)
+              .with_owner(str_sender_address)
+              .fee_limit(fee)
+              .memo(details["MEMO"])
+              .build()
+              .sign(private_key))
+        tx.broadcast()
+        util.print_color("[middleman] operation complete!","GREEN")
+
+    def freeze_balance(self):
+        details = self.collect_userinput_details(["KEY","RESOURCE","AMOUNT"])
+
+        if not details:
+            return None 
+
+        str_pvk = details["KEY"]
+        private_key = PrivateKey(bytes.fromhex(str_pvk))
+        address = private_key.public_key.to_base58check_address()
+        resource = str.upper(details["RESOURCE"])
+        amount = self.str_to_sun(details["AMOUNT"])
+
+        tx = (self.tron.trx.freeze_balance(owner=address,amount=amount,resource=resource).build().sign(private_key))
+        tx.broadcast()
+        util.print_color("[middleman] operation complete.","GREEN")
 
     def unfreeze_balance(self):
         details = self.collect_userinput_details(["KEY","RESOURCE","AMOUNT"])
@@ -119,13 +154,11 @@ class TronInterface:
         private_key = PrivateKey(bytes.fromhex(str_pvk))
         address = private_key.public_key.to_base58check_address()
         resource = str.upper(details["RESOURCE"])
+        amount = self.str_to_sun(details["AMOUNT"])
+        
+        tx = (self.tron.trx.unfreeze_balance(owner=address,resource=resource,unfreeze_balance=amount).build().sign(private_key))
+        tx.broadcast()
+        util.print_color("[middleman] operation complete.","GREEN")
 
-        # payload = {"address": address}
-        # response = requests.get(self.TRONSCAN_API_URL, params=payload)
-        # data = response.json()
-        # frozen = data["frozen_balance"]
-        tx = (self.tron.trx.unfreeze_balance(owner=address,resource=resource,unfreeze_balance=int(details["AMOUNT"])).build().sign(private_key))
-        response = tx.broadcast().wait()
-        print(response)
 
 

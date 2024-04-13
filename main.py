@@ -12,12 +12,23 @@ terminated = False
 def terminate():
     terminated = True
 
+def info():
+    util.print_shelf()
+    print("this script is for simple transaction broadcasting, so monitor blockchain yourself.")
+    print("you must also keep track of your account's energy before sending USDT.")
+    print("remember that sending USDT to account that does not have USDT costs double energy.")
+    print("energy for USDT transaction can be rented from any tron energy renting service.")
+    print("if you leave fee limit empty it will be set to 20 trx by default.")
+    util.print_shelf()
+
 commands = {
-    "quit": terminate
+    "q": terminate,
+    "r": info
 }
 
 commands_context = {
-    "quit": "q - quit"
+    "q": "q - quit",
+    "r": "r - readme"
 }
 
 def input_menu():
@@ -51,49 +62,3 @@ while(not terminated):
         maincmd()
     else: 
         print("[middleman] unrecognized command, try again.")
-
-
-# if TRXOnly:
-#     print("> Coin: TRX")
-# else:
-#     print("> Coin: USDT")
-# print("--------------------------------")
-# strFinal = input("type coconut to confirm transaction: ")
-
-# if strFinal == "coconut":
-#     try:
-#         private_key = PrivateKey(bytes.fromhex(strPrivKey))
-#         address = private_key.public_key.to_base58check_address()
-#         recipient_address = strAddress
-#         amount = int(strAmount)  # Amount of USDT to send (in decimal format)
-#         amount_in_wei = int(amount * 10 ** 6)  # Convert to USDT's decimal precision (6 decimals)
-        
-#         print("> details confirmed, building transaction.")
-
-#         if TRXOnly:
-#             txn = (tron.trx.transfer(address, recipient_address, amount)
-#             .build()
-#             .sign(private_key))
-#             response = txn.broadcast()
-#         else:
-#             token_address = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"  # USDT contract address on Tron mainnet
-
-#             token_contract = tron.get_contract(token_address)
-
-#             tx = (
-#                 token_contract.functions.transfer(
-#                     recipient_address,
-#                     amount)
-#                 .with_owner(address)
-#                 .fee_limit(15_000_000)
-#                 .build()
-#                 .sign(private_key)
-#             )
-            
-#             response = tx.broadcast()
-#         print("> broadcast was successful.")
-#     except Exception as e:
-#         print(e)
-#         print("> transaction failed: error occured.")
-# else:
-#     print("> transaction failed: cancelled by user.")
