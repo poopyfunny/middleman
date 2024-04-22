@@ -55,7 +55,7 @@ def collect_details_menu(header: str, ctx: array):
 
     if final_user_answer == "c":
         return None
-    elif final_user_answer == "y":
+    elif final_user_answer == "f":
         dc = {}
         # return dict
         for i in cache:
