@@ -21,7 +21,12 @@ def print_shelf():
 def input_color(msg, color: str):
     return input(Colors[color] + msg + "\u001b[0m")
 
-def collect_details_menu(header: str, ctx: array):
+
+def startmenu_details_editor(header: str, ctx: array):
+    """
+    keep detail names unique
+    """
+
     cache = []
     final_user_answer = None
     
@@ -33,29 +38,30 @@ def collect_details_menu(header: str, ctx: array):
         print(header)
         for i in range(len(cache)):
             pair = cache[i]
-            print(f"{i} - {pair[0]}: " + pair[1])
-        print("c - cancel")
-        print("f - finish")
+            print(f"{i+1} - {pair[0]}: " + pair[1])
+        print("quit - stop editing and cancel.")
+        print("done - proceed with the given details.")
         print_shelf()
 
-        inp = input("select:")
-        if inp == "f":
-            final_user_answer = "f"
+        inp = input()
+
+        if inp == "done":
+            final_user_answer = "done"
             break
-        elif inp == "c":
-            final_user_answer = "c"
+        elif inp == "quit":
+            final_user_answer = "quit"
             break
         
         for i in range(len(cache)):
-            if str(i) == inp:
+            if str(i+1) == inp:
                 cache[i][1] = input("value:")
                 break
     
     print("Exiting details editor.")
 
-    if final_user_answer == "c":
+    if final_user_answer == "quit":
         return None
-    elif final_user_answer == "f":
+    elif final_user_answer == "done":
         dc = {}
         # return dict
         for i in cache:
