@@ -72,7 +72,7 @@ class TronInterface:
         str_sender_address = private_key.public_key.to_base58check_address()
         str_recipient_address = details["ADDRESS"]
         fee = int(details["FEE_LIMIT"])
-        amount = int(details["AMOUNT_TRX"])
+        amount = int(details["AMOUNT_TRX_SUN"])
 
         tx = (self.tron.trx.transfer(str_sender_address, str_recipient_address,amount).memo(details["MEMO"]).fee_limit(fee).build().sign(private_key))
         tx.broadcast()
