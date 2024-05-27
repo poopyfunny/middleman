@@ -1,13 +1,23 @@
 import tron_interface
 import util
 from tron_interface import TronInterface
-import traceback
+from btc_interface import BitcoinInterface
 
 VERSION = "0.1"
 
-tron_interface = TronInterface()
+tron = TronInterface()
+bitcoin = BitcoinInterface()
 
 terminated = False
+
+commands_context = {
+    "q": "q - quit",
+    "r": "r - readme",
+    "c": "c - switch coin."
+}
+
+coins = ["TRX","BTC"]
+coin_index = 0
 
 def terminate():
     terminated = True
@@ -21,22 +31,29 @@ def info():
     print("if you leave fee limit empty it will be set to 20 trx by default.")
     util.print_shelf()
 
+def switch_coin():
+    global coin_index
+    coin_index += 1
+    if (coin_index >= len(coins)):
+        coin_index = 0
+
 commands = {
     "q": terminate,
-    "r": info
-}
-
-commands_context = {
-    "q": "q - quit",
-    "r": "r - readme"
+    "r": info,
+    "c": switch_coin
 }
 
 def input_menu():
     print("commands:")
 
-    for i in tron_interface.commands:
-        ctx = tron_interface.commands_context[i]
-        print("> " + ctx)
+    if (coins[coin_index] == "TRX"):
+        for i in tron.commands:
+            ctx = tron.commands_context[i]
+            print("> " + ctx)
+    if (coins[coin_index] == "BTC"):
+        for i in bitcoin.commands:
+            ctx = bitcoin.commands_context[i]
+            print("> " + ctx)
 
     for i in commands:
         ctx = commands_context[i]
@@ -49,11 +66,19 @@ util.print_color("[middleman v" + VERSION + "]","BLUE")
 
 while(not terminated):
     msg = input_menu()
-    troncmd = tron_interface.commands.get(msg)
+
+    coin_cmd = None
+
+    if (coins[coin_index] == "TRX"):
+        coin_cmd = tron.commands.get(msg)
+    elif (coins[coin_index] == "BTC"):
+        coin_cmd = bitcoin.commands.get(msg)
+    
     maincmd = commands.get(msg)
-    if troncmd != None: 
+
+    if coin_cmd != None: 
         try:
-            troncmd()
+            coin_cmd()
         except Exception as e:
             for a in e.args:
                 util.print_color(a, "RED")

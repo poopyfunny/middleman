@@ -20,31 +20,13 @@ class TronInterface:
         }
         self.commands_context = {
             "1": "1 - send trx",
-            "2": "2 - send usd",
+            "2": "2 - send usdt",
             "3": "3 - freeze balance",
             "4": "4 - unfreeze balance"
         }
 
-    def collect_userinput_details(self, args):
-        inputs = {}
-        
-        util.print_shelf()
-        print("[Details]")
-        for i in args:
-            inputs[i] = str.strip(input("> {}: ".format(i)))
-
-        util.print_shelf()
-        yn = str.strip(util.input_color("proceed? [y/n]: ","YELLOW"))
-
-        if (yn == "y"):
-            return inputs
-        
-        util.print_color("[middleman] procedure cancelled by user.", "RED")
-        return None
-    
-
     def _find_chainparam_value_by_key(self, collection, key):
-         for i in collection:   
+         for i in collection:
             if i["key"] == key:
                 return i["value"]
 
@@ -71,7 +53,7 @@ class TronInterface:
         return 0
 
     def send_trx(self):
-        details = util.startmenu_details_editor("Transaction", ["KEY", "ADDRESS", "AMOUNT_TRX", "MEMO","FEE_LIMIT"])
+        details = util.startmenu_details_editor("Transaction", ["KEY", "ADDRESS", "AMOUNT_TRX_SUN", "MEMO","FEE_LIMIT"])
 
         if details == None:
             return None
@@ -97,7 +79,7 @@ class TronInterface:
         util.print_color("[middleman] operation complete!","GREEN")
 
     def send_usdt(self):
-        details = util.startmenu_details_editor("Transaction", ["KEY", "ADDRESS", "AMOUNT_USDT", "MEMO", "FEE_LIMIT"])
+        details = util.startmenu_details_editor("Transaction", ["KEY", "ADDRESS", "AMOUNT_USDT_SUN", "MEMO", "FEE_LIMIT"])
 
         if details == None:
             return None

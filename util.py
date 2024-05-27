@@ -66,6 +66,7 @@ def startmenu_details_editor(header: str, ctx: array):
         # return dict
         for i in cache:
             dc[i[0]] = i[1]
+        return dc
         
         
 
