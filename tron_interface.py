@@ -75,8 +75,9 @@ class TronInterface:
         amount = int(details["AMOUNT_TRX_SUN"])
 
         tx = (self.tron.trx.transfer(str_sender_address, str_recipient_address,amount).memo(details["MEMO"]).fee_limit(fee).build().sign(private_key))
-        tx.broadcast()
-        util.print_color("[middleman] operation complete!","GREEN")
+        responce = tx.broadcast().wait()
+        print(responce)
+        print("[middleman] operation finished.")
 
     def send_usdt(self):
         details = util.startmenu_details_editor("Transaction", ["KEY", "ADDRESS", "AMOUNT_USDT_SUN", "MEMO", "FEE_LIMIT"])
@@ -100,7 +101,7 @@ class TronInterface:
         private_key = PrivateKey(bytes.fromhex(str_pvk))
         str_sender_address = private_key.public_key.to_base58check_address()
         str_recipient_address = details["ADDRESS"]
-        amount = int(details["AMOUNT_USDT"])
+        amount = int(details["AMOUNT_USDT_SUN"])
         fee = int(details["FEE_LIMIT"])
 
         tx = (token_contract.functions.transfer(str_recipient_address,amount)
@@ -109,8 +110,9 @@ class TronInterface:
               .memo(details["MEMO"])
               .build()
               .sign(private_key))
-        tx.broadcast()
-        util.print_color("[middleman] operation complete!","GREEN")
+        responce = tx.broadcast()
+        print(responce)
+        print("[middleman] operation finished.")
 
     def freeze_balance(self):
         details = self.collect_userinput_details(["KEY","RESOURCE","AMOUNT"])
