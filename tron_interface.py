@@ -75,7 +75,7 @@ class TronInterface:
         amount = int(details["AMOUNT_TRX_SUN"])
 
         tx = (self.tron.trx.transfer(str_sender_address, str_recipient_address,amount).memo(details["MEMO"]).fee_limit(fee).build().sign(private_key))
-        responce = tx.broadcast().wait()
+        responce = tx.broadcast()
         print(responce)
         print("[middleman] operation finished.")
 

@@ -34,9 +34,9 @@ class BitcoinInterface:
         if (selected_fee != "n"):
             fee = int(selected_fee)
 
-        # is_fee_absolute = False;
-        # if (input("is fee absolute? (y/n)") == "y"):
-        #     is_fee_absolute = True
+        is_fee_absolute = False;
+        if (input("is fee absolute? (y/n)") == "y"):
+            is_fee_absolute = True
 
         coconut = util.input_color("Type coconut to broadcast transaction:", "GREEN")
         if coconut != "coconut":
@@ -45,5 +45,5 @@ class BitcoinInterface:
         
         amount = details["AMOUNT"]
 
-        key.send([(details["ADDRESS"],amount,"btc")],fee)
+        key.send([(details["ADDRESS"],amount,"btc")],fee,is_fee_absolute)
         util.print_color("[middleman] operation complete!","GREEN")
